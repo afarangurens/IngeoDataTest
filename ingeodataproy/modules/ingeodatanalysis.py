@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 
 
-def read_file(file_path: str) -> pd.DataFrame:
+def read_file(file_path) -> pd.DataFrame:
     """
     Read a file from the specified path and return a pandas DataFrame.
 
@@ -21,12 +21,12 @@ def read_file(file_path: str) -> pd.DataFrame:
     Raises:
         ValueError: If the file type is not supported.
     """
-    if file_path.endswith('.csv'):
-        return pd.read_csv(file_path)
-    elif file_path.endswith('.xls') or file_path.endswith('.xlsx'):
-        return pd.read_excel(file_path)
-    else:
-        raise ValueError(f'The type of file isn\'t supported: {file_path}')
+    try:
+        df = pd.read_csv(file_path)
+
+        return format_date(df)
+    except ValueError as e:
+        raise ValueError(f'The type of file isn\'t supported: {e}')
 
 
 def format_date(df: pd.DataFrame) -> pd.DataFrame:
@@ -243,7 +243,7 @@ def get_correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
     return corr_df
 
 
-def plot_correlation_matrix(df: pd.DataFrame) -> None:
+def plot_correlation_matrix(df):
     """
        Plot the correlation matrix of a given dataframe.
 
@@ -261,34 +261,4 @@ def plot_correlation_matrix(df: pd.DataFrame) -> None:
     plt.show()
 
 
-"""
-path = r'C:\Users\ANDRES\OneDrive\Escritorio\PraxisTryout\PET_PRI_GND_DCUS_NUS_W.csv'
 
-dataframe = read_file(path)
-
-
-print(describe_statistically(dataframe))
-
-
-df1 = time_series_analysis(dataframe, "month")
-
-print(df1)
-
-correlations = gas_diesel_correlation(dataframe)
-
-print(correlations)
-
-
-cluster_data = dataframe[['A1', 'R1', 'M1', 'P1', 'D1']]
-
-# Perform clustering with 3 clusters
-cluster_centers, labels = k_means_clustering(cluster_data, n_clusters=10)
-
-# Print the cluster centers and the labels for the first 10 data points
-print(cluster_centers)
-print(labels[:10])
-
-corr_ma = get_correlation_matrix(dataframe)
-print(corr_ma)
-
-plot_correlation_matrix(corr_ma)"""
