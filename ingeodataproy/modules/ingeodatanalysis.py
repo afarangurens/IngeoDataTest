@@ -3,6 +3,8 @@ from sklearn.cluster import KMeans
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib
+import io
+import base64
 
 # This is to fix a bug on the plotting of the correlation matrix
 matplotlib.use('TkAgg')
@@ -253,12 +255,20 @@ def plot_correlation_matrix(df):
        Returns:
            None.
     """
-    fig, ax = plt.subplots(figsize=(10, 10))
 
-    sns.heatmap(df, cmap='coolwarm', annot=True, fmt='.2f',
+    df_corr = get_correlation_matrix(df)
+    sns.heatmap(df_corr, cmap='coolwarm', annot=True, fmt='.2f',
                 square=True, linewidths=.5, cbar_kws={"shrink": .5})
-    ax.set_title('Correlation Matrix')
-    plt.show()
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    graphic = base64.b64encode(image_png)
+    graphic = graphic.decode('utf-8')
+
+    return graphic
 
 
 

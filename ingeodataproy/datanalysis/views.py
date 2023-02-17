@@ -1,43 +1,80 @@
-from django.shortcuts import render
-from .forms import UploadFileForm
-from modules.ingeodatanalysis import read_file
-from .models import GasPrices
-
+from django.shortcuts import render, redirect
+from django.core.cache import cache
+from modules.ingeodatanalysis import read_file, plot_correlation_matrix, time_series_analysis
+from io import BytesIO
+import base64
+from django.http import HttpResponse
+import json
+import pandas as pd
+import tempfile
+import os
+from django.views import View
+from .forms import CsvFileForm
+from .models import CsvFile
 
 # Create your views here.
 
 
-def upload_file(request):
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
+class CsvFileUploadView(View):
+    def get(self, request):
+        form = CsvFileForm()
+        context = {'form': form}
+        return render(request, 'upload.html', context)
+
+    def post(self, request):
+        form = CsvFileForm(request.POST, request.FILES)
         if form.is_valid():
+            csv_file = form.cleaned_data['file']
+            CsvFile.objects.create(file=csv_file)
 
-            file = request.FILES['file']
+            return redirect('csv_preview')
+        return render(request, 'upload.html', {'form': form})
 
-            df = read_file(file)
 
-            for index, row in df.iterrows():
-                data_obj = GasPrices(
-                    date=row['Date'],
-                    a1=row['A1'],
-                    a2=row['A2'],
-                    a3=row['A3'],
-                    r1=row['R1'],
-                    r2=row['R2'],
-                    r3=row['R3'],
-                    m1=row['M1'],
-                    m2=row['M2'],
-                    m3=row['M3'],
-                    p1=row['P1'],
-                    p2=row['P2'],
-                    p3=row['P3'],
-                    d1=row['D1'],
-                )
+def csv_preview(request):
+    csv_data = cache.get('csv_data')
+    if csv_data is None:
+        return render(request, 'no_data.html')
 
-                data_obj.save()
+    table = csv_data.to_html(classes='table table-striped')
 
-            return render(request, 'success.html')
+    df_json = csv_data.to_json()
+
+    return render(request, 'csv_preview.html', {'table': table})
+
+
+def time_analysis(request):
+    csv_data = cache.get('csv_data')
+    if csv_data is None:
+        return render(request, 'no_data.html')
+
+    res_df = time_series_analysis(csv_data, "month")
+
+    table = res_df.to_html(classes="table table-striped")
+
+    return render(request, 'time-analysis.html', {'table': table})
+
+
+def heatmap_image(request):
+    if request.method == "POST" and request.FILES['file']:
+        file = request.FILES['file']
+
+        df = read_file(file)
+
+        # Generate the heatmap image
+        heatmap = plot_correlation_matrix(df)
+
+        image_bytes = base64.b64decode(heatmap)
+
+        # Save the image to a BytesIO object
+        image_buffer = BytesIO()
+        image_buffer.write(image_bytes)
+        image_buffer.seek(0)
+
+        encoded_image = base64.b64encode(image_buffer.getvalue()).decode('utf-8')
+        image_data_uri = f"data:image/png;base64,{encoded_image}"
+
+        # Render a new template with the image data URI as a context variable
+        return render(request, 'heatmap_image.html', {'image_data_uri': image_data_uri})
     else:
-        form = UploadFileForm()
-
-    return render(request, 'upload.html', {'form': form})
+        return render(request, 'upload.html')

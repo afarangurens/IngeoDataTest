@@ -1,0 +1,8 @@
+
+{% block content %}
+  <h1>Los datos contenidos en el dataset son:</h1>
+  <a href="{% url 'time_analysis' %}">Time Analysis</a>
+  <h2>table</h2>
+  {{ table|safe }}
+{% endblock %}
+

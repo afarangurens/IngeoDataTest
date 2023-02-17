@@ -48,6 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'datanalysis.middleware.CsvFileMiddleware',
+
 ]
 
 ROOT_URLCONF = 'ingeodataproy.urls'
