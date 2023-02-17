@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+    <a class="nav-item nav-link" href="{% url 'csv_upload' %}"><i class="fa-solid fa-warehouse"></i>Upload File</a>
+    <hr>
+    <a class="nav-item nav-link" href="{% url 'csv_preview' %}"><i class="fa-regular fa-newspaper"></i> Ver Dataset</a>
+    <hr>
+    <a class="nav-item nav-link" href="{% url 'time_analysis' %}"><i class="fa-solid fa-user-group"></i> Análisis de Tiempo</a>
+    <hr>
+    <a class="nav-item nav-link" href="{% url 'plot_heatmap' %}"><i class="fa-solid fa-chart-line"></i> Graficar Matriz de correlaciones</a>
+    <hr>
+    <a class="nav-item nav-link" href="{% url 'describe_dataset' %}"><i class="fa-solid fa-chart-line"></i> Describir el Dataset</a>
+    <hr>
+    <a class="nav-item nav-link" href="{% url 'correlate_a1_d1' %}"><i class="fa-solid fa-chart-line"></i> Correlacionar A1 y D1</a>
+    <hr>
+    <a class="nav-item nav-link" href="{% url 'k_means_cluster' %}"><i class="fa-solid fa-chart-line"></i> K Means Cluster</a>
+    <hr>
+
+
+{% endblock content %}

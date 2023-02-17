@@ -9,13 +9,25 @@ class CsvFileMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        """
+        Middleware that reads a CSV file into a DataFrame and caches it in memory.
+
+        Args:
+            request (HttpRequest): The HTTP request object.
+
+        Returns:
+            HttpResponse: The HTTP response object.
+        """
         if request.path == reverse('csv_upload'):
             return self.get_response(request)
+
         df = cache.get('csv_data')
+
         if df is None:
             csv_file = CsvFile.objects.latest('uploaded_at').file
             df = read_file(csv_file)
             cache.set('csv_data', df)
+
         return self.get_response(request)
 
 

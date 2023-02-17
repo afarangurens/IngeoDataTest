@@ -173,7 +173,7 @@ def describe_statistically(df: pd.DataFrame) -> pd.DataFrame:
         raise ValueError(f"There was an error calculating the central tendencies, error:{e}.")
 
 
-def gas_diesel_correlation(df: pd.DataFrame, col1: str = 'A1', col2: str = "D1") -> pd.DataFrame:
+def gas_diesel_correlation(df: pd.DataFrame, col1: str = 'A1', col2: str = "D1") -> float:
     """
     Computes the Pearson correlation coefficient between the gas and diesel prices in the given dataframe.
     It is a number between -1 and 1, and what this tell us is that if the coefficient between two columns is closer to
@@ -211,19 +211,19 @@ def k_means_clustering(df: pd.DataFrame, n_clusters: int = 10) -> tuple:
     """
     # Preprocess the data
     # ...
-
+    cluster_data = df[['A1', 'R1', 'M1', 'P1', 'D1']]
     # Create the K-Means model
     kmeans = KMeans(n_clusters=n_clusters, n_init=10)
 
     # Fit the model to the data
-    kmeans.fit(df)
+    kmeans.fit(cluster_data)
 
     # Assign each point to a cluster
     labels = kmeans.labels_
 
     # Analyze the clusters
     cluster_centers = kmeans.cluster_centers_
-    cluster_df = pd.DataFrame(cluster_centers, columns=df.columns)
+    cluster_df = pd.DataFrame(cluster_centers, columns=cluster_data.columns)
     cluster_df['cluster'] = range(n_clusters)
 
     return cluster_df, labels
