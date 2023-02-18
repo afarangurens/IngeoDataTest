@@ -78,7 +78,7 @@ A continuación se encuentran los endpoints a los archivos más importantes para
 
 <h3>Colección de Postman para los Tests</h3>
 
-- <a href="">Colección Postman</a></h5>
+- <a href="https://github.com/afarangurens/ingeodata-test-aranguren/blob/main/ingeodata-test-aranguren.postman_collection.json">Colección Postman</a></h5>
 
 # Documentación
 
