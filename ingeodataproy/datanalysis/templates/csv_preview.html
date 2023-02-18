@@ -1,6 +1,7 @@
 
 {% block content %}
   <h1>Los datos contenidos en el dataset son:</h1>
+<a  href="{% url 'home' %}">Ir a home</a>
     <h2>table</h2>
   {{ table|safe }}
 {% endblock %}
